@@ -1,0 +1,6 @@
+type Template @model @versioned {
+  id: ID!
+  name: String!
+  description: String!
+  content: String!
+}
