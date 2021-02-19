@@ -24,7 +24,7 @@ describe('Main Test of DynamoDB and S3 interaction', () => {
       .type('{enter}')
       .type('        "y": 10,')
       .type('{enter}')
-      .type('        "scale": 15,')
+      .type('        "scale": 15')
       .type('{enter}')
       .type('     },')
       .type('{enter}')
@@ -40,12 +40,15 @@ describe('Main Test of DynamoDB and S3 interaction', () => {
       .type('{enter}')
       .type('        "y": 10,')
       .type('{enter}')
-      .type('        "scale": 15,')
+      .type('        "scale": 15')
       .type('{enter}')
-      .type('     },')
+      .type('     }')
       .type('{enter}')
-      .type('   ],')
+      .type('   ]')
       .type('{enter}')
       .type('}');
+
+    cy.get('#upload-content').click();
   });
+
 });

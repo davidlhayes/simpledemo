@@ -1,0 +1,19 @@
+{
+  "content": [
+     {
+        "component_type": "header1",
+        "label": "Header",
+        "x": 10,
+        "y": 10,
+        "scale": 15
+     },
+     {
+        "component_type": "divider",
+        "label": "none",
+        "style": "double",
+        "x": 10,
+        "y": 10,
+        "scale": 15
+     }
+   ]
+}

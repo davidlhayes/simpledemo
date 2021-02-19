@@ -9,23 +9,24 @@
       <textarea v-model="content" id="sdata" name="sdata" rows="20" cols="80"></textarea>
     </div>
     <div>
-      <button v-on:click="createTemplate">Create Template</button>
+      <button id="create-template" v-on:click="createTemplate">Create Template</button>
     </div>
     <div>
       <input type="text" v-model="id" placeholder="Item ID">
-      <button v-on:click="deleteTemplate">Delete Template</button>
+      <button id="delete-template" v-on:click="deleteTemplate">Delete Template</button>
     </div>
     <div>
-      <button v-on:click="uploadContent">Upload Content</button>
+      <button id="upload-content" v-on:click="uploadContent">Upload Content</button>
     </div>
     <div>
-      <button v-on:click="removeContent">Remove Content</button>
+      <button id="remove-content" v-on:click="removeContent">Remove Content</button>
     </div>
     <div v-for="item in templates" :key="item.id">
       <h3>{{ item.name }}</h3>
       <p>{{ item.description }}</p>
       <h6>{{ item.id }}</h6>
     </div>
+    <div id="content">{{ displayContent }}</div>
   </div>
 </template>
 
@@ -40,7 +41,7 @@ Amplify.configure(awsconfig);
 export default {
   name: 'App',
   async created() {
-    this.getTemplates();
+    this.getTemplates().then(this.getContent());
   },
   data() {
     return {
@@ -72,6 +73,14 @@ export default {
         query: listTemplates,
       });
       this.templates = templates.data.listTemplates.items;
+    },
+    async getContent() {
+      const c = await Storage.get('test.json', {
+        level: 'public',
+        download: false,
+        contentType: 'text/json',
+      });
+      this.displayContent = c;
     },
     async deleteTemplate() {
       const { id } = this;
