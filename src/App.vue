@@ -9,6 +9,10 @@
       <textarea v-model="content" id="sdata" name="sdata" rows="20" cols="80"></textarea>
     </div>
     <div>
+      <button id="show-template" v-on:click="showTemplate">Load Template</button>
+      <button id="show-content" v-on:click="showContent">Load Content</button>
+    </div>
+    <div>
       <button id="create-template" v-on:click="createTemplate">Create Template</button>
     </div>
     <div>
@@ -22,11 +26,11 @@
       <button id="remove-content" v-on:click="removeContent">Remove Content</button>
     </div>
     <div v-for="item in templates" :key="item.id">
-      <h3>{{ item.name }}</h3>
-      <p>{{ item.description }}</p>
-      <h6>{{ item.id }}</h6>
+      <h3 class="template-name">{{ item.name }}</h3>
+      <p class="template-description">{{ item.description }}</p>
+      <h6 class="template-id">{{ item.id }}</h6>
     </div>
-    <div id="content">{{ displayContent }}</div>
+    <div id="display-content">{{ displayContent }}</div>
   </div>
 </template>
 
@@ -37,6 +41,21 @@ import { listTemplates } from './graphql/queries';
 import awsconfig from './aws-exports';
 
 Amplify.configure(awsconfig);
+
+const getJSON = (url, callback) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.responseType = 'json';
+  xhr.onload = () => {
+    const { status } = xhr;
+    if (status === 200) {
+      callback(null, xhr.response);
+    } else {
+      callback(status, xhr.response);
+    }
+  };
+  xhr.send();
+};
 
 export default {
   name: 'App',
@@ -49,10 +68,17 @@ export default {
       description: '',
       id: '',
       content: '',
+      displayContent: {},
       templates: [],
     };
   },
   methods: {
+    showTemplate() {
+      this.getTemplates();
+    },
+    showContent() {
+      this.getContent();
+    },
     async createTemplate() {
       const { name, description, content } = this;
       if (!name || !description) return;
@@ -67,20 +93,32 @@ export default {
       this.name = '';
       this.description = '';
       this.content = '';
+      this.getTemplates().then(this.getContent());
     },
     async getTemplates() {
       const templates = await API.graphql({
         query: listTemplates,
       });
       this.templates = templates.data.listTemplates.items;
+      this.id = this.templates[0].id;
     },
     async getContent() {
+      this.content = '';
+      this.displayContent = '';
       const c = await Storage.get('test.json', {
         level: 'public',
         download: false,
         contentType: 'text/json',
       });
-      this.displayContent = c;
+      // eslint-disable-next-line no-console
+      console.log('c:\n', c);
+      getJSON(c, (err, data) => {
+        if (err !== null) {
+          // eslint-disable-next-line no-console
+        } else {
+          this.displayContent = data.content[0].component_type;
+        }
+      });
     },
     async deleteTemplate() {
       const { id } = this;
@@ -91,6 +129,8 @@ export default {
         query: deleteTemplate,
         variables: { input: { id, expectedVersion: 1 } },
       });
+      this.id = '';
+      this.showTemplate();
     },
     async uploadContent() {
       Storage.put('test.json', this.content)
