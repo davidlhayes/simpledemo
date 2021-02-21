@@ -19,3 +19,7 @@
 - In one terminal window, run `amplify mock`
 - In a second terminal window, run `npm run serve`
 - In a third terminal window, run `npx cypress open`
+
+#### References:
+- Amplify tutorial: https://docs.amplify.aws/start/getting-started/setup/q/integration/vue
+- Cypress tutorial:  https://docs.cypress.io/guides/getting-started/installing-cypress.html
